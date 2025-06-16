@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../models/bajar_item_model.dart';
 import '../view_models/bajar_list_controller.dart';
@@ -96,15 +97,29 @@ class BajarListDetailScreen extends StatelessWidget {
                           decoration: item.isMarked ? TextDecoration.lineThrough : null,
                         ),
                       ),
-                      subtitle: Text(
-                        '${item.weight} ${item.unit}',
-                        style: TextStyle(
-                          color: item.isMarked
-                              ? AppColors.textSecondary.withOpacity(0.5)
-                              : AppColors.textSecondary,
-                        ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('${item.weight} ${item.unit}'),
+                          SizedBox(height: 4),
+                          Text(
+                            'Added: ${DateFormat('MMM d, y').format(item.createdAt)}',
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                          if (item.updatedAt != item.createdAt)
+                            Text(
+                              'Updated: ${DateFormat('MMM d, y').format(item.updatedAt)}',
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                        ],
                       ),
-                       trailing: Row(
+                      trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Container(

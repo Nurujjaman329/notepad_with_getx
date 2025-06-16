@@ -41,4 +41,5 @@ class LocalStorageService {
         .toList();
     _storage.write(_bajarListKey, raw);
   }
+
 }

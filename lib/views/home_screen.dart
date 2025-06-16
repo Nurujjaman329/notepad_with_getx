@@ -321,7 +321,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           toggleBajarListSelection(i);
                         });
                       },
-                      child: Card(
+                      child:
+                      Card(
                         color: AppColors.cardBackground,
                         elevation: 2,
                         shape: RoundedRectangleBorder(
@@ -338,18 +339,22 @@ class _HomeScreenState extends State<HomeScreen> {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color: isSelected
-                                      ? AppColors.primary
-                                      : Colors.black,
+                                  color: isSelected ? AppColors.primary : Colors.black,
                                 ),
                               ),
                               SizedBox(height: 6),
                               Text(
                                 '${list.length} item(s) - Total: ৳${list.fold(0.0, (sum, e) => sum + e.amount).toStringAsFixed(2)}',
                                 style: TextStyle(
-                                  color: isSelected
-                                      ? AppColors.primary
-                                      : Colors.grey,
+                                  color: isSelected ? AppColors.primary : Colors.grey,
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                'Created: ${DateFormat('MMM d').format(list.first.createdAt)}', // Shows date of first item
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: isSelected ? AppColors.primary : Colors.grey,
                                 ),
                               ),
                             ],

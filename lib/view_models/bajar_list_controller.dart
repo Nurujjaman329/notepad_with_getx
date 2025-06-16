@@ -33,7 +33,7 @@ class BajarListController extends GetxController {
   void addItemToList(int listIndex, BajarItemModel item) {
     bajarLists[listIndex].add(item);
     bajarLists.refresh();
-    saveBajarListsLocally(); // ✅ also called after update
+    saveBajarListsLocally();
   }
 
   void saveBajarListsLocally() {
@@ -42,6 +42,7 @@ class BajarListController extends GetxController {
 
   // Update item at given listIndex and itemIndex
   void updateItemInList(int listIndex, int itemIndex, BajarItemModel updatedItem) {
+    updatedItem.updatedAt = DateTime.now(); // Update the timestamp
     bajarLists[listIndex][itemIndex] = updatedItem;
     bajarLists.refresh();
     saveBajarListsLocally();
@@ -58,10 +59,10 @@ class BajarListController extends GetxController {
   void toggleMarked(int listIndex, int itemIndex) {
     final list = bajarLists[listIndex];
     final item = list[itemIndex];
-    item.isMarked = !item.isMarked; // now allowed after removing final
+    item.isMarked = !item.isMarked;
+    item.updatedAt = DateTime.now(); // Update the timestamp
     bajarLists[listIndex] = [...list]; // Force reactivity
     saveBajarListsLocally();
   }
-
 
 }

@@ -40,7 +40,7 @@ class _BajarListScreenState extends State<BajarListScreen> {
       });
     }
   }
-
+  
   void _saveList() {
     if (items.isNotEmpty) {
       controller.addNewBajarList(List.from(items));
