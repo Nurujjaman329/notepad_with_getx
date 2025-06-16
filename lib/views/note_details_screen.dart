@@ -22,25 +22,12 @@ class NoteDetailScreen extends StatelessWidget {
         backgroundColor: AppColors.primary,
         title: Obx(() {
           final note = controller.getNoteById(noteId);
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                note.title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              Text(
-                'Created: ${DateFormat.yMd().add_jm().format(note.createdAt)}',
-                style: TextStyle(fontSize: 12, color: Colors.white70),
-              ),
-              Text(
-                'Updated: ${DateFormat.yMd().add_jm().format(note.updatedAt)}',
-                style: TextStyle(fontSize: 12, color: Colors.white70),
-              ),
-            ],
+          return Text(
+            note.title,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
           );
         }),
         iconTheme: const IconThemeData(color: Colors.white),
@@ -246,13 +233,33 @@ class NoteDetailScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(4),
             ),
           ),
-          title: Text(
-            task.text,
-            style: TextStyle(
-              fontSize: 16,
-              color: task.isDone ? AppColors.textSecondary : AppColors.textPrimary,
-              decoration: task.isDone ? TextDecoration.lineThrough : null,
-            ),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                task.text,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: task.isDone ? AppColors.textSecondary : AppColors.textPrimary,
+                  decoration: task.isDone ? TextDecoration.lineThrough : null,
+                ),
+              ),
+              SizedBox(height: 4),
+              Text(
+                'Created: ${DateFormat.yMd().add_jm().format(note.createdAt)}',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: AppColors.textSecondary.withOpacity(0.7),
+                ),
+              ),
+              Text(
+                'Updated: ${DateFormat.yMd().add_jm().format(note.updatedAt)}',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: AppColors.textSecondary.withOpacity(0.7),
+                ),
+              ),
+            ],
           ),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
@@ -276,7 +283,6 @@ class NoteDetailScreen extends StatelessWidget {
       ),
     );
   }
-
   void _addTask(NoteController controller) {
     final text = _taskController.text.trim();
     if (text.isNotEmpty) {
