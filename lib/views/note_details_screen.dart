@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import '../models/note_model.dart';
 import '../models/task_item.dart';
 import '../view_models/note_controller.dart';
@@ -21,12 +22,25 @@ class NoteDetailScreen extends StatelessWidget {
         backgroundColor: AppColors.primary,
         title: Obx(() {
           final note = controller.getNoteById(noteId);
-          return Text(
-            note.title,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-            ),
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                note.title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Text(
+                'Created: ${DateFormat.yMd().add_jm().format(note.createdAt)}',
+                style: TextStyle(fontSize: 12, color: Colors.white70),
+              ),
+              Text(
+                'Updated: ${DateFormat.yMd().add_jm().format(note.updatedAt)}',
+                style: TextStyle(fontSize: 12, color: Colors.white70),
+              ),
+            ],
           );
         }),
         iconTheme: const IconThemeData(color: Colors.white),

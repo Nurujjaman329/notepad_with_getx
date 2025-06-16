@@ -15,11 +15,13 @@ class NoteController extends GetxController {
   }
 
   void addNote(String title, List<TaskItem> tasks) {
+    final now = DateTime.now();
     final note = NoteModel(
       id: Uuid().v4(),
       title: title,
       tasks: tasks,
-      createdAt: DateTime.now(),
+      createdAt: now,
+      updatedAt: now,
     );
     notes.add(note);
     save();
@@ -53,6 +55,7 @@ class NoteController extends GetxController {
         title: note.title,
         tasks: List.from(note.tasks),
         createdAt: note.createdAt,
+        updatedAt: DateTime.now(), // Update timestamp
       );
       save();
     }
@@ -68,10 +71,12 @@ class NoteController extends GetxController {
         title: note.title,
         tasks: List.from(note.tasks),
         createdAt: note.createdAt,
+        updatedAt: DateTime.now(), // Update timestamp
       );
       save();
     }
   }
+
 
   // ✅ NEW: Remove a task by index
   void removeTask(String noteId, int taskIndex) {
@@ -84,11 +89,11 @@ class NoteController extends GetxController {
         title: note.title,
         tasks: List.from(note.tasks),
         createdAt: note.createdAt,
+        updatedAt: DateTime.now(), // Update timestamp
       );
       save();
     }
   }
-
   // ✅ NEW: Update the note title
   void updateNoteTitle(String noteId, String newTitle) {
     final index = notes.indexWhere((n) => n.id == noteId);
@@ -99,11 +104,11 @@ class NoteController extends GetxController {
         title: newTitle,
         tasks: List.from(note.tasks),
         createdAt: note.createdAt,
+        updatedAt: DateTime.now(), // Update timestamp
       );
       save();
     }
   }
-
   // ✅ NEW: Update task text
   void updateTaskText(String noteId, int taskIndex, String newText) {
     final index = notes.indexWhere((n) => n.id == noteId);
@@ -119,6 +124,7 @@ class NoteController extends GetxController {
         title: note.title,
         tasks: List.from(note.tasks),
         createdAt: note.createdAt,
+        updatedAt: DateTime.now(), // Update timestamp
       );
       save();
     }
