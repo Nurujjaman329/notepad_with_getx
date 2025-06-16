@@ -23,6 +23,10 @@ class _HomeScreenState extends State<HomeScreen> {
   final selectedBajarLists = <int>{}.obs;
   final isSelecting = false.obs;
 
+  final selectedFilter = 'All'.obs;
+  final filters = ['All', 'Notes', 'Bajar List'];
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,13 +41,6 @@ class _HomeScreenState extends State<HomeScreen> {
         )),
         iconTheme: IconThemeData(color: Colors.white),
         actions: [
-          // IconButton(
-          //   icon: Icon(Icons.brightness_6, color: Colors.white),
-          //   onPressed: () {
-          //     Get.find<ThemeController>().toggleTheme();
-          //   },
-          // ),
-
           Obx(() {
             if (isSelecting.value) {
               return Row(
@@ -86,185 +83,222 @@ class _HomeScreenState extends State<HomeScreen> {
         return ListView(
           padding: EdgeInsets.all(10),
           children: [
-            Text('Notes', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: notes.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 3 / 2,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-              ),
-              itemBuilder: (_, i) {
-                final note = notes[i];
-                final isSelected = selectedNotes.contains(note.id);
+            // Horizontal filter bar
+            SizedBox(
+              height: 50,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: filters.length,
+                separatorBuilder: (_, __) => SizedBox(width: 10),
+                itemBuilder: (context, index) {
+                  final filter = filters[index];
+                  final isSelected = selectedFilter.value == filter;
 
-                return GestureDetector(
-                  onTap: () {
-                    if (isSelecting.value) {
+                  return GestureDetector(
+                    onTap: () => selectedFilter.value = filter,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      margin: EdgeInsets.only(left: index == 0 ? 0 : 0),
+                      decoration: BoxDecoration(
+                        color: isSelected ? AppColors.primary : AppColors.cardBackground,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: AppColors.border),
+                      ),
+                      child: Text(
+                        filter,
+                        style: TextStyle(
+                          color: isSelected ? Colors.white : AppColors.textPrimary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            SizedBox(height: 20),
+
+            // Notes Section
+            if (selectedFilter.value == 'All' || selectedFilter.value == 'Notes') ...[
+              Text('Notes', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              GridView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: notes.length,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 3 / 2,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                ),
+                itemBuilder: (_, i) {
+                  final note = notes[i];
+                  final isSelected = selectedNotes.contains(note.id);
+
+                  return GestureDetector(
+                    onTap: () {
+                      if (isSelecting.value) {
+                        setState(() {
+                          toggleNoteSelection(note.id);
+                        });
+                      } else {
+                        Get.to(() => NoteDetailScreen(noteId: note.id));
+                      }
+                    },
+                    onLongPress: () {
+                      if (!isSelecting.value) {
+                        isSelecting.value = true;
+                      }
                       setState(() {
                         toggleNoteSelection(note.id);
                       });
-                    } else {
-                      Get.to(() => NoteDetailScreen(noteId: note.id));
-                    }
-                  },
-                  onLongPress: () {
-                    if (!isSelecting.value) {
-                      isSelecting.value = true;
-                    }
-                    setState(() {
-                      toggleNoteSelection(note.id);
-                    });
-                  },
-                  child: Card(
-                    color: AppColors.cardBackground,
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      side: BorderSide(color: AppColors.border, width: 1),
-                    ),
-                    child: Stack(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: isSelected
-                                ? AppColors.primary.withOpacity(0.1)
-                                : Colors.white,
-                          ),
-                          padding: EdgeInsets.all(12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                note.title,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: isSelected
-                                      ? AppColors.primary
-                                      : Colors.black,
-                                ),
-                              ),
-                              Spacer(),
-                              Text(
-                                '${note.tasks.length} item(s)',
-                                style: TextStyle(
-                                  color: isSelected
-                                      ? AppColors.primary
-                                      : Colors.grey,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        if (isSelecting.value)
-                          Positioned.fill(
-                            child: AnimatedContainer(
-                              duration: Duration(milliseconds: 200),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                color: isSelected
-                                    ? AppColors.primary.withOpacity(0.3)
-                                    : Colors.transparent,
-                              ),
-                            ),
-                          ),
-                        if (isSelecting.value)
-                          Positioned(
-                            top: 8,
-                            right: 8,
-                            child: Container(
-                              width: 24,
-                              height: 24,
-                              decoration: BoxDecoration(
-                                color: isSelected ? AppColors.primary : Colors.white,
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: isSelected ? Colors.white : Colors.grey,
-                                  width: 2,
-                                ),
-                              ),
-                              child: isSelected
-                                  ? Icon(Icons.check, size: 16, color: Colors.white)
-                                  : null,
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-            SizedBox(height: 20),
-            Text('Bajar List', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: bajarLists.length,
-              itemBuilder: (_, i) {
-                final list = bajarLists[i];
-                final isSelected = selectedBajarLists.contains(i);
-
-                return GestureDetector(
-                  onTap: () {
-                    if (isSelecting.value) {
-                      setState(() {
-                        toggleBajarListSelection(i);
-                      });
-                    } else {
-                      Get.to(() => BajarListDetailScreen(listIndex: i));
-                    }
-                  },
-
-                  onLongPress: () {
-                    if (!isSelecting.value) {
-                      isSelecting.value = true;
-                    }
-                    setState(() {
-                      toggleBajarListSelection(i);
-                    });
-                  },
-                  child: Card(
-                    color: AppColors.cardBackground,
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      side: BorderSide(color: AppColors.border, width: 1),
-                    ),
-                    child: Container(
-                      padding: EdgeInsets.all(12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    },
+                    child: Card(
+                      color: AppColors.cardBackground,
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(color: AppColors.border, width: 1),
+                      ),
+                      child: Stack(
                         children: [
-                          Text(
-                            'List #${i + 1}',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: isSelected ? AppColors.primary : Colors.black,
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              color: isSelected
+                                  ? AppColors.primary.withOpacity(0.1)
+                                  : Colors.white,
+                            ),
+                            padding: EdgeInsets.all(12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  note.title,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: isSelected ? AppColors.primary : Colors.black,
+                                  ),
+                                ),
+                                Spacer(),
+                                Text(
+                                  '${note.tasks.length} item(s)',
+                                  style: TextStyle(
+                                    color: isSelected ? AppColors.primary : Colors.grey,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          SizedBox(height: 6),
-                          Text(
-                            '${list.length} item(s) - Total: ৳${list.fold(0.0, (sum, e) => sum + e.amount).toStringAsFixed(2)}',
-
-                            style: TextStyle(
-                              color: isSelected ? AppColors.primary : Colors.grey,
+                          if (isSelecting.value)
+                            Positioned.fill(
+                              child: AnimatedContainer(
+                                duration: Duration(milliseconds: 200),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: isSelected
+                                      ? AppColors.primary.withOpacity(0.3)
+                                      : Colors.transparent,
+                                ),
+                              ),
                             ),
-                          ),
+                          if (isSelecting.value)
+                            Positioned(
+                              top: 8,
+                              right: 8,
+                              child: Container(
+                                width: 24,
+                                height: 24,
+                                decoration: BoxDecoration(
+                                  color: isSelected ? AppColors.primary : Colors.white,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: isSelected ? Colors.white : Colors.grey,
+                                    width: 2,
+                                  ),
+                                ),
+                                child: isSelected
+                                    ? Icon(Icons.check, size: 16, color: Colors.white)
+                                    : null,
+                              ),
+                            ),
                         ],
                       ),
                     ),
-                  ),
-                );
-              },
-            ),
+                  );
+                },
+              ),
+              SizedBox(height: 20),
+            ],
+
+            // Bajar List Section
+            if (selectedFilter.value == 'All' || selectedFilter.value == 'Bajar List') ...[
+              Text('Bajar List', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: bajarLists.length,
+                itemBuilder: (_, i) {
+                  final list = bajarLists[i];
+                  final isSelected = selectedBajarLists.contains(i);
+
+                  return GestureDetector(
+                    onTap: () {
+                      if (isSelecting.value) {
+                        setState(() {
+                          toggleBajarListSelection(i);
+                        });
+                      } else {
+                        Get.to(() => BajarListDetailScreen(listIndex: i));
+                      }
+                    },
+                    onLongPress: () {
+                      if (!isSelecting.value) {
+                        isSelecting.value = true;
+                      }
+                      setState(() {
+                        toggleBajarListSelection(i);
+                      });
+                    },
+                    child: Card(
+                      color: AppColors.cardBackground,
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(color: AppColors.border, width: 1),
+                      ),
+                      child: Container(
+                        padding: EdgeInsets.all(12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'List #${i + 1}',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: isSelected ? AppColors.primary : Colors.black,
+                              ),
+                            ),
+                            SizedBox(height: 6),
+                            Text(
+                              '${list.length} item(s) - Total: ৳${list.fold(0.0, (sum, e) => sum + e.amount).toStringAsFixed(2)}',
+                              style: TextStyle(
+                                color: isSelected ? AppColors.primary : Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
           ],
         );
+
       }),
       floatingActionButton: Obx(() => AnimatedSlide(
         duration: Duration(milliseconds: 200),
